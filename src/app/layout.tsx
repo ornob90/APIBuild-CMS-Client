@@ -4,6 +4,7 @@ import "./globals.css";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -17,9 +18,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
-        className={`${poppins.className} antialiased`}
+        className={`${poppins.className} bg-white dark:bg-dark text-black dark:text-white antialiased `}
       >
         {children}
       </body>
