@@ -7,7 +7,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/@heroui/theme/dist/components/(button|input|ripple|spinner|form).js"
+    "./node_modules/@heroui/theme/dist/components/(button|drawer|input|ripple|spinner|modal|form).js"
   ],
   theme: {
     extend: {
@@ -16,6 +16,12 @@ const config: Config = {
         darkGray: "#212427"
       },
     },
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: "1rem"
+      }
+    }
   },
   plugins: [heroui()],
 };

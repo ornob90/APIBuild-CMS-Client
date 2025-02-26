@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@heroui/button": "^2.2.13",
+    "@heroui/drawer": "^2.2.11",
     "@heroui/input": "^2.4.13",
     "@heroui/system": "^2.4.10",
     "@heroui/theme": "^2.4.9",
+    "@heroui/use-disclosure": "^2.2.6",
     "framer-motion": "^12.4.7",
     "next": "14.2.24",
     "react": "^18",

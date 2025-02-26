@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import Sidebar from "@/components/home/Sidebar";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -18,11 +19,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark ">
       <body
-        className={`${poppins.className} bg-white dark:bg-dark text-black dark:text-white antialiased `}
+        className={`${poppins.className}   bg-white min-h-screen dark:bg-dark text-black dark:text-white antialiased `}
       >
-        {children}
+        <section className=" flex">
+          <section className=" w-[20%]">
+            <Sidebar />
+          </section>
+          <section className=" w-[80%] ">{children}</section>
+        </section>
       </body>
     </html>
   );

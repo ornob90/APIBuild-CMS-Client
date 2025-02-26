@@ -10,4 +10,8 @@ p  {
     @apply text-sm font-normal
 }
 
+button {
+    @apply bg-blue-500
+}
+
 
