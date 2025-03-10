@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FocusEventHandler, ReactNode } from "react";
-import {  RegisterOptions, UseFormRegister } from "react-hook-form";
+import { RegisterOptions, UseFormRegister } from "react-hook-form";
 
 export interface ButtonProps {
   children: ReactNode;
@@ -9,6 +9,7 @@ export interface ButtonProps {
 export interface EventTypes {
   onFocus?: FocusEventHandler<HTMLInputElement>;
   onBlur?: FocusEventHandler<HTMLInputElement>;
+  onChange?: React.ChangeEventHandler<HTMLSelectElement> | undefined;
 }
 
 export interface CommonInputProps extends EventTypes {
@@ -22,6 +23,21 @@ export interface PasswordProps extends CommonInputProps {
   className?: string;
   register: UseFormRegister<any>;
   registerOptions?: RegisterOptions<any, "password">;
-  isInvalid?: boolean,
-  errorMessage?: string
+  isInvalid?: boolean;
+  errorMessage?: string;
+}
+
+export type Option = {
+  label: string;
+  value: string;
+};
+
+interface OptionProps {
+  className: string;
+}
+
+export interface SelectProps extends EventTypes {
+  options: Option[];
+  className?: string;
+  optionProps?: OptionProps;
 }

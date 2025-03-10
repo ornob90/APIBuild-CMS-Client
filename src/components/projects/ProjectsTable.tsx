@@ -3,7 +3,7 @@
 import Table from "../shared/Table";
 import { RiDeleteBinLine } from "react-icons/ri";
 
-const projects = [
+export const projects = [
   {
     rowNumber: "1",
     projectName: "Project A",
