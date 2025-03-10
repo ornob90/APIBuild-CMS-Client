@@ -1,22 +1,22 @@
-"use client"
+"use client";
 import React from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  useDisclosure,
-} from "@heroui/modal";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { Modal, ModalContent, ModalBody, useDisclosure } from "@heroui/modal";
 import { Input } from "@heroui/input";
-import { Select, SelectItem } from "@heroui/select";
 import { Button } from "@heroui/button";
 import { ApiFormData } from "@/types/apis.types";
+import { SelectHookForm } from "../shared/Select";
+import {
+  methodOptions,
+  actionOptions,
+  aggregateTypeOptions,
+  sortOrderOptions,
+} from "@/data/apis.data";
 
 const dummyTables = [
-  { key: "1", label: "Users" },
-  { key: "2", label: "Orders" },
-  { key: "3", label: "Products" },
+  { value: "1", label: "Users" },
+  { value: "2", label: "Orders" },
+  { value: "3", label: "Products" },
 ];
 
 const AddApiModal = ({}) => {
@@ -24,78 +24,194 @@ const AddApiModal = ({}) => {
     register,
     handleSubmit,
     formState: { errors },
+    control,
   } = useForm<ApiFormData>();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const handleFormSubmit: SubmitHandler<ApiFormData> = () => {};
+  const handleFormSubmit: SubmitHandler<ApiFormData> = (data) => {
+    console.log(data);
+  };
 
   return (
     <>
       <Button onPress={onOpen}>Add API</Button>
-      <Modal isOpen={isOpen} hideCloseButton onOpenChange={onOpenChange}>
-        <ModalContent className="bg-darkGray border border-gray-800 p-6 rounded-lg">
-          <ModalHeader>
-            <h2 className="text-xl font-semibold mb-4">Add New API</h2>
-          </ModalHeader>
-          <ModalBody>
+      <Modal
+        isOpen={isOpen}
+        size="2xl"
+        hideCloseButton
+        onOpenChange={onOpenChange}
+        scrollBehavior="outside"
+      >
+        <ModalContent className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Add API</h2>
+          <ModalBody className="px-0">
             <form
+              className="grid grid-cols-2 gap-6 w-full"
               onSubmit={handleSubmit(handleFormSubmit)}
-              className="space-y-4"
             >
-              <div>
-                {/* <Select
-                  label="Method"
-                  {...register("method", { required: "Method is required" })}
-                  errorMessage={errors.method?.message}
-                >
-                  <option value="">Select Method</option>
-                  <option value="GET">GET</option>
-                  <option value="POST">POST</option>
-                  <option value="PUT">PUT</option>
-                  <option value="DELETE">DELETE</option>
-                </Select> */}
-              </div>
-              <div>
-                <Input
-                  label="Path"
-                  {...register("path", { required: "Path is required" })}
-                  errorMessage={errors.path?.message}
-                />
-              </div>
-              <div>
-                {/* <Select
-                  label="Table"
-                  {...register("tableId", { required: "Table is required" })}
-                  items={dummyTables}
-                  errorMessage={errors.tableId?.message}
-                >
-                  <SelectItem>Select Table</SelectItem>
-                  {(table) => <SelectItem>{table.label}</SelectItem>}
-                </Select> */}
-              </div>
-              <div>
-                {/* <Select
-                  label="Action"
-                  {...register("action", { required: "Action is required" })}
-                  errorMessage={errors.action?.message}
-                >
-                  <option value="">Select Action</option>
-                  <option value="findOne">findOne</option>
-                  <option value="findAll">findAll</option>
-                  <option value="aggregate">aggregate</option>
-                  <option value="insert">insert</option>
-                  <option value="update">update</option>
-                  <option value="delete">delete</option>
-                </Select> */}
-              </div>
-              {/* Add additional fields as necessary */}
-              <div className="flex justify-end space-x-2">
-                <Button  >
-                  Cancel
-                </Button>
-                <Button type="submit">Submit</Button>
-              </div>
+              <Controller
+                control={control}
+                name="path"
+                rules={{ required: "Path is required." }}
+                render={({
+                  field: { name, value, onChange, onBlur },
+                  fieldState: { error },
+                }) => (
+                  <Input
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    isRequired
+                    label="Path"
+                    labelPlacement="outside"
+                    errorMessage={error?.message}
+                    placeholder="API Path"
+                  />
+                )}
+              />
+              <SelectHookForm
+                register={register}
+                name="method"
+                registerOptions={{ required: "Method is required" }}
+                options={methodOptions}
+                label="Method"
+              />
+              <SelectHookForm
+                register={register}
+                name="action"
+                registerOptions={{ required: "Action is required" }}
+                options={actionOptions}
+                label="Action"
+              />
+              <SelectHookForm
+                register={register}
+                name="tableId"
+                registerOptions={{ required: "Table ID is required" }}
+                options={dummyTables}
+                label="Table"
+              />
+              <Controller
+                control={control}
+                name="queryField"
+                render={({
+                  field: { name, value, onChange, onBlur },
+                  fieldState: { error },
+                }) => (
+                  <Input
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    label="Query Field"
+                    labelPlacement="outside"
+                    placeholder="Query Field"
+                    errorMessage={error?.message}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="paramName"
+                render={({
+                  field: { name, value, onChange, onBlur },
+                  fieldState: { error },
+                }) => (
+                  <Input
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    labelPlacement="outside"
+                    label="Parameter Name"
+                    placeholder="Parameter Name"
+                    errorMessage={error?.message}
+                  />
+                )}
+              />
+              <SelectHookForm
+                register={register}
+                name="sortField"
+                options={dummyTables}
+                label="Sort Field"
+              />
+              <SelectHookForm
+                register={register}
+                name="sortOrder"
+                options={sortOrderOptions}
+                label="Sort Order"
+              />
+              <Controller
+                control={control}
+                name="limit"
+                render={({
+                  field: { name, value, onChange, onBlur },
+                  fieldState: { error },
+                }) => (
+                  <Input
+                    name={name}
+                    value={String(value)}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    type="number"
+                    label="Limit"
+                    labelPlacement="outside"
+                    placeholder="Limit"
+                    errorMessage={error?.message}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="groupBy"
+                render={({
+                  field: { name, value, onChange, onBlur },
+                  fieldState: { error },
+                }) => (
+                  <Input
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    label="Group By"
+                    labelPlacement="outside"
+                    placeholder="Group By"
+                    errorMessage={error?.message}
+                  />
+                )}
+              />
+              <SelectHookForm
+                register={register}
+                name="aggregateType"
+                options={aggregateTypeOptions}
+                label="Aggregate Type"
+              />
+              <Controller
+                control={control}
+                name="aggregateField"
+                render={({
+                  field: { name, value, onChange, onBlur },
+                  fieldState: { error },
+                }) => (
+                  <Input
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    labelPlacement="outside"
+                    label="Aggregate Field"
+                    placeholder="Aggregate Field"
+                    errorMessage={error?.message}
+                  />
+                )}
+              />
+              <Button
+                type="submit"
+                className=" col-span-2  bg-white text-black"
+              >
+                Submit
+              </Button>
             </form>
           </ModalBody>
         </ModalContent>

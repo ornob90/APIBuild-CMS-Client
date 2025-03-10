@@ -41,3 +41,14 @@ export interface SelectProps extends EventTypes {
   className?: string;
   optionProps?: OptionProps;
 }
+
+export interface SelectHookFormProps extends EventTypes {
+  options: Option[];
+  className?: string;
+  classNameForWrapper?: string;
+  optionProps?: OptionProps;
+  register: any;
+  registerOptions?: RegisterOptions;
+  name: string;
+  label?: string;
+}

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Modal, ModalBody, useDisclosure, ModalContent } from "@heroui/modal";
 import { Input } from "@heroui/input";
 import Select from "../shared/Select";
-import { projects } from "../projects/ProjectsTable";
 import {
   ColumnData,
   ColumnFormProps,
@@ -19,6 +18,7 @@ import {
 import { Radio, RadioGroup } from "@heroui/radio";
 import { AiFillPlusCircle } from "react-icons/ai";
 import { FaCircleMinus } from "react-icons/fa6";
+import ProjectsSelect from "../shared/ProjectsSelect";
 
 const AddTableModal = () => {
   // custom or package hooks
@@ -27,15 +27,10 @@ const AddTableModal = () => {
   // states
   const [columns, setColumns] = useState<ColumnData[]>([initialColumnForm]);
   const [tableName, setTableName] = useState("");
-  const [selectedProject, setSelectedProject] = useState("");
+  const [selectedProject, setSelectedProject] = useState<string>("");
   const [errors, setErrors] = useState<TableFormError>({
     ...initialTableError,
   });
-
-  const projectsOptions = projects.map((project) => ({
-    label: project.projectName,
-    value: project.projectName,
-  }));
 
   const handleSubmit = () => {
     // setErrors({ ...initialTableError });
@@ -103,8 +98,7 @@ const AddTableModal = () => {
                 className="grid grid-cols-2 gap-4"
                 onSubmit={(e) => e.preventDefault()}
               >
-                <Select
-                  options={projectsOptions}
+                <ProjectsSelect
                   onChange={(e) => setSelectedProject(e.target.value)}
                   //   className="col-span-2"
                 />
