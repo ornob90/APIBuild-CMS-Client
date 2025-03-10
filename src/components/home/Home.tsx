@@ -1,7 +1,11 @@
-import React from "react";
+import SectionContainer from "../shared/SectionContainer";
 
 const Home = () => {
-  return <section className="">Home</section>;
+  return (
+    <SectionContainer>
+      <search>home</search>
+    </SectionContainer>
+  );
 };
 
 export default Home;
