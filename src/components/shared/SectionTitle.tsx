@@ -7,7 +7,8 @@ interface SectionTitleProps {
   classNameForHeader?: string;
   btnText?: string;
   rightTemplate?: ReactNode;
-  onBtnClick?: ((e: PressEvent) => void) | undefined
+  hideRightSide?: boolean;
+  onBtnClick?: ((e: PressEvent) => void) | undefined;
 }
 
 const SectionTitle = ({
@@ -16,15 +17,20 @@ const SectionTitle = ({
   className,
   classNameForHeader,
   onBtnClick,
-  rightTemplate
+  rightTemplate,
+  hideRightSide,
 }: SectionTitleProps) => {
   return (
     <section className={`px-4 flex  justify-between items-center ${className}`}>
       <h1 className={` ${classNameForHeader}`}>{title}</h1>
-      {rightTemplate ? (
-        rightTemplate
-      ) : (
-        <Button onPress={onBtnClick}>{btnText}</Button>
+      {!hideRightSide && (
+        <>
+          {rightTemplate ? (
+            rightTemplate
+          ) : (
+            <Button onPress={onBtnClick}>{btnText}</Button>
+          )}
+        </>
       )}
     </section>
   );

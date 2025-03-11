@@ -9,7 +9,7 @@ const Projects = () => {
   return (
     <SectionContainer>
       {/* <SectionTitle title="Projects" rightTemplate={<AddApiModal />}/> */}
-      <SectionTitle title="Projects" rightTemplate={<AddApiModal />}/>
+      <SectionTitle title="Projects" rightTemplate={<AddApiModal />} />
       <ProjectsTable />
     </SectionContainer>
   );

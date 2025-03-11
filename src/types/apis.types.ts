@@ -1,10 +1,15 @@
+export type Param = {
+  name: string;
+  action: "findOne" | "findAll";
+};
+
 export interface ApiFormData {
   method: string;
   path: string;
   tableId: string;
   action: string;
   queryField?: string;
-  paramName?: string;
+  params?: Param[];
   sortField?: string;
   sortOrder?: number;
   limit?: number;
@@ -14,4 +19,8 @@ export interface ApiFormData {
   returnIdOnly?: boolean;
   returnUpdated?: boolean;
   returnCount?: boolean;
+}
+
+export interface APIFormError {
+  path: string;
 }

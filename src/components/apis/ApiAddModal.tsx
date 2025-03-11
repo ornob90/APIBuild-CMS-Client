@@ -1,17 +1,21 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import React from "react";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import React, { useEffect, useState } from "react";
 import { Modal, ModalContent, ModalBody, useDisclosure } from "@heroui/modal";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { ApiFormData } from "@/types/apis.types";
 import { SelectHookForm } from "../shared/Select";
 import {
   methodOptions,
   actionOptions,
   aggregateTypeOptions,
   sortOrderOptions,
+  initialFormData,
 } from "@/data/apis.data";
+import Label from "../shared/Label";
+import { extractParams, isValidEndpoint } from "@/utils/regex.utils";
+import { ApiFormData, APIFormError } from "@/types/apis.types";
+import ParamsForm from "./ParamsForm";
 
 const dummyTables = [
   { value: "1", label: "Users" },
@@ -20,18 +24,66 @@ const dummyTables = [
 ];
 
 const AddApiModal = ({}) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    control,
-  } = useForm<ApiFormData>();
-
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const handleFormSubmit: SubmitHandler<ApiFormData> = (data) => {
-    console.log(data);
+  // states
+  const [formData, setFormData] = useState<ApiFormData>({ ...initialFormData });
+
+  const [errors, setErrors] = useState<APIFormError>({ path: "" });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+
+    // console.log("NAMESFD: ", { name, value });
+
+    setErrors({ path: "" });
+    setFormData({ ...formData, [name]: value });
   };
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!formData.path) {
+      return setErrors((prev) => ({ ...prev, path: "Path is required" }));
+    }
+
+    if (!isValidEndpoint(formData.path)) {
+      return setErrors((prev) => ({
+        ...prev,
+        path: "Invalid Endpoint Format",
+      }));
+    }
+
+    // console.log(formData);
+  };
+
+  const handlePathBlur = () => {
+    if (formData.path && isValidEndpoint(formData.path)) {
+      const params = extractParams(formData.path);
+
+      setFormData({
+        ...formData,
+        params: params.map((param) => ({ name: param, action: "findOne" })),
+      });
+    }
+
+    if (formData.params && !isValidEndpoint(formData.path)) {
+      setErrors((prev) => ({
+        ...prev,
+        path: "Invalid Endpoint Format",
+      }));
+    }
+
+    if (!formData.path) setFormData({ ...formData, params: [] });
+  };
+
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({ ...initialFormData });
+      setErrors({ path: "" });
+    }
+  }, [isOpen]);
 
   return (
     <>
@@ -48,168 +100,191 @@ const AddApiModal = ({}) => {
           <ModalBody className="px-0">
             <form
               className="grid grid-cols-2 gap-6 w-full"
-              onSubmit={handleSubmit(handleFormSubmit)}
+              onSubmit={handleFormSubmit}
             >
-              <Controller
-                control={control}
+              <Input
                 name="path"
-                rules={{ required: "Path is required." }}
-                render={({
-                  field: { name, value, onChange, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <Input
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    isRequired
+                value={formData.path}
+                onChange={(e) => handleChange(e)}
+                label={
+                  <Label
                     label="Path"
-                    labelPlacement="outside"
-                    errorMessage={error?.message}
-                    placeholder="API Path"
+                    tooltipProps={{
+                      content:
+                        "Enter the API endpoint path. Use a leading '/' (e.g., '/projects/:id'). Parameters should be prefixed with ':' (e.g., ':id' becomes a parameter). Avoid trailing slashes unless necessary.",
+                    }}
                   />
-                )}
+                }
+                labelPlacement="outside"
+                placeholder="e.g, /projects/:id"
+                errorMessage={errors.path}
+                isInvalid={!!errors.path}
+                onBlur={handlePathBlur}
               />
               <SelectHookForm
-                register={register}
                 name="method"
-                registerOptions={{ required: "Method is required" }}
+                value={formData.method}
+                onChange={(e) => handleChange(e)}
                 options={methodOptions}
-                label="Method"
+                label={
+                  <Label
+                    label="Method"
+                    tooltipProps={{
+                      content:
+                        "Select the HTTP method for the API request (e.g., GET, POST, PUT, DELETE).",
+                    }}
+                  />
+                }
               />
+              {formData?.params && formData?.params?.length > 0 && (
+                <section className="  col-span-2">
+                  <ParamsForm
+                    params={formData.params}
+                    formData={formData}
+                    setFormData={setFormData}
+                  />
+                </section>
+              )}
               <SelectHookForm
-                register={register}
                 name="action"
-                registerOptions={{ required: "Action is required" }}
+                value={formData.action}
+                onChange={(e) => handleChange(e)}
                 options={actionOptions}
-                label="Action"
+                label={
+                  <Label
+                    label="Action"
+                    tooltipProps={{
+                      content:
+                        "Choose the action that the API will perform (e.g., Fetch, Create, Update, Delete).",
+                    }}
+                  />
+                }
               />
               <SelectHookForm
-                register={register}
                 name="tableId"
-                registerOptions={{ required: "Table ID is required" }}
+                value={formData.tableId}
+                onChange={(e) => handleChange(e)}
                 options={dummyTables}
-                label="Table"
+                label={
+                  <Label
+                    label="Table"
+                    tooltipProps={{
+                      content:
+                        "Select the table on which the API will operate.",
+                    }}
+                  />
+                }
               />
-              <Controller
-                control={control}
+              <Input
                 name="queryField"
-                render={({
-                  field: { name, value, onChange, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <Input
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    label="Query Field"
-                    labelPlacement="outside"
-                    placeholder="Query Field"
-                    errorMessage={error?.message}
+                value={formData.queryField}
+                onChange={(e) => handleChange(e)}
+                label={
+                  <Label
+                    label="Query Fields (Separated By Comma)"
+                    tooltipProps={{
+                      content:
+                        "Specify the fields to query, separated by commas (e.g., 'id,name,role').",
+                    }}
                   />
-                )}
-              />
-              <Controller
-                control={control}
-                name="paramName"
-                render={({
-                  field: { name, value, onChange, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <Input
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    labelPlacement="outside"
-                    label="Parameter Name"
-                    placeholder="Parameter Name"
-                    errorMessage={error?.message}
-                  />
-                )}
+                }
+                labelPlacement="outside"
+                placeholder="e.g, tab,id,role"
               />
               <SelectHookForm
-                register={register}
                 name="sortField"
+                value={String(formData.sortField)}
+                onChange={(e) => handleChange(e)}
                 options={dummyTables}
-                label="Sort Field"
+                label={
+                  <Label
+                    label="Sort Field"
+                    tooltipProps={{
+                      content:
+                        "Choose the field by which results should be sorted.",
+                    }}
+                  />
+                }
               />
               <SelectHookForm
-                register={register}
                 name="sortOrder"
+                value={String(formData.sortOrder)}
+                onChange={(e) => handleChange(e)}
                 options={sortOrderOptions}
-                label="Sort Order"
+                label={
+                  <Label
+                    label="Sort Order"
+                    tooltipProps={{
+                      content:
+                        "Specify the sort order: Ascending or Descending.",
+                    }}
+                  />
+                }
               />
-              <Controller
-                control={control}
+              <Input
                 name="limit"
-                render={({
-                  field: { name, value, onChange, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <Input
-                    name={name}
-                    value={String(value)}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    type="number"
+                value={String(formData.limit)}
+                onChange={(e) => handleChange(e)}
+                type="number"
+                label={
+                  <Label
                     label="Limit"
-                    labelPlacement="outside"
-                    placeholder="Limit"
-                    errorMessage={error?.message}
+                    tooltipProps={{
+                      content:
+                        "Set a limit for the number of results to return.",
+                    }}
                   />
-                )}
+                }
+                labelPlacement="outside"
+                placeholder="Limit"
               />
-              <Controller
-                control={control}
+              <Input
                 name="groupBy"
-                render={({
-                  field: { name, value, onChange, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <Input
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
+                value={formData.groupBy}
+                onChange={(e) => handleChange(e)}
+                label={
+                  <Label
                     label="Group By"
-                    labelPlacement="outside"
-                    placeholder="Group By"
-                    errorMessage={error?.message}
+                    tooltipProps={{
+                      content: "Specify the field to group results by.",
+                    }}
                   />
-                )}
+                }
+                labelPlacement="outside"
+                placeholder="Group By"
               />
               <SelectHookForm
-                register={register}
                 name="aggregateType"
+                value={String(formData.aggregateType)}
+                onChange={(e) => handleChange(e)}
                 options={aggregateTypeOptions}
-                label="Aggregate Type"
-              />
-              <Controller
-                control={control}
-                name="aggregateField"
-                render={({
-                  field: { name, value, onChange, onBlur },
-                  fieldState: { error },
-                }) => (
-                  <Input
-                    name={name}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    labelPlacement="outside"
-                    label="Aggregate Field"
-                    placeholder="Aggregate Field"
-                    errorMessage={error?.message}
+                label={
+                  <Label
+                    label="Aggregate Type"
+                    tooltipProps={{
+                      content:
+                        "Select the aggregation type for grouped data (e.g., SUM, COUNT, AVG).",
+                    }}
                   />
-                )}
+                }
               />
-              <Button
-                type="submit"
-                className=" col-span-2  bg-white text-black"
-              >
+              <Input
+                name="aggregateField"
+                value={formData.aggregateField}
+                onChange={(e) => handleChange(e)}
+                label={
+                  <Label
+                    label="Aggregate Field"
+                    tooltipProps={{
+                      content:
+                        "Specify the field to apply the aggregation function on.",
+                    }}
+                  />
+                }
+                labelPlacement="outside"
+                placeholder="Aggregate Field"
+              />
+              <Button type="submit" className="col-span-2 bg-white text-black">
                 Submit
               </Button>
             </form>

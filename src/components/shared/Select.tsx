@@ -21,15 +21,17 @@ export const SelectHookForm = ({
   options,
   className,
   optionProps,
-  register,
+//   register,
+//   registerOptions,
   name,
-  registerOptions,
   classNameForWrapper,
   label,
+  value,
+  onChange
 }: SelectHookFormProps) => {
   return (
     <div
-      className={` flex ${
+      className={` w-full flex ${
         label
           ? "  flex-col gap-y-1"
           : "justify-center items-center bg-lightGray rounded-xl py-[10px] px-3  h-fit"
@@ -37,17 +39,20 @@ export const SelectHookForm = ({
     >
       {label && <p>{label}</p>}
       <div
-        className={` h-fit ${
+        className={` h-fit w-full  ${
           label
             ? "justify-center items-center bg-lightGray rounded-xl py-2 px-3  h-fit"
             : ""
         }`}
       >
         <select
-          {...register(name, registerOptions)}
+          //   {...register(name, registerOptions)}
+          name={name}
           className={` w-full   bg-lightGray   text-sm   focus:outline-none ${
             label ? "" : ""
           }   ${className}`}
+          value={value}
+          onChange={onChange}
         >
           {options.map((option) => (
             <option key={option.label} className={` ${optionProps?.className}`}>

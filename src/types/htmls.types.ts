@@ -47,8 +47,9 @@ export interface SelectHookFormProps extends EventTypes {
   className?: string;
   classNameForWrapper?: string;
   optionProps?: OptionProps;
-  register: any;
-  registerOptions?: RegisterOptions;
+  // register: any;
+  // registerOptions?: RegisterOptions;
   name: string;
-  label?: string;
+  label?: string | ReactNode;
+  value: string
 }
