@@ -1,12 +1,13 @@
 "use client";
+import SubmitBtn from "@/components/shared/SubmitBtn";
+import { initialFormActionState } from "@/data/actions.data";
 import { ApiStatus } from "@/types/globals.types";
 import { login } from "@/utils/auth.utils";
-import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormState } from "react-dom";
 import toast from "react-hot-toast";
 
 // Define the props for the component to handle server-side errors
@@ -14,25 +15,15 @@ interface LoginFormProps {
   error?: string;
 }
 
-const initialState = {
-  message: "",
-  status: ApiStatus.IDLE,
-};
-
 // Server Component
 export default function LoginForm({ error }: LoginFormProps = {}) {
-  const [state, formAction] = useFormState(login, initialState);
-  const { pending } = useFormStatus();
+  const [state, formAction] = useFormState(login, initialFormActionState);
 
   const router = useRouter();
 
   useEffect(() => {
-    if (state.message) {
+    if (state && state?.message) {
       toast.error(state.message);
-    }
-
-    if (state.status === ApiStatus.FINISH) {
-      // router.push("/");
     }
   }, [state, router]);
 
@@ -65,9 +56,7 @@ export default function LoginForm({ error }: LoginFormProps = {}) {
       {error && <p className="text-red-500 text-center">{error}</p>}
 
       {/* Submit Button */}
-      <Button isLoading={pending} type="submit" className="bg-white text-black">
-        Submit
-      </Button>
+      <SubmitBtn text="Sign In" loadingText="Signing In" />
 
       {/* Register Link */}
       <p className="text-center">

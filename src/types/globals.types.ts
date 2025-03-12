@@ -4,3 +4,8 @@ export enum ApiStatus {
   FINISH = "finish",
   ERROR = "error",
 }
+
+export interface ServerActionState {
+  message: string;
+  status: ApiStatus;
+}

@@ -2,6 +2,7 @@ import { sidebarTabs } from "@/data/home.data";
 import { Button } from "@heroui/button";
 import Link from "next/link";
 import React from "react";
+import LogoutBtn from "../shared/LogoutBtn";
 
 const Sidebar = () => {
   return (
@@ -24,7 +25,7 @@ const Sidebar = () => {
         ))}
       </ul>
       <section className=" px-4 w-full">
-        <Button className=" w-full bg-white text-black">Logout</Button>
+        <LogoutBtn />
       </section>
     </section>
   );

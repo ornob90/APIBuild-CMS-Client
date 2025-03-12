@@ -1,9 +1,24 @@
-import React from 'react'
+"use client";
+import { Button } from "@heroui/button";
+import React from "react";
+import { useFormStatus } from "react-dom";
 
-const SubmitBtn = () => {
-  return (
-    <div>SubmitBtn</div>
-  )
+export interface SubmitBtnProps {
+  text: string;
+  loadingText: string;
+  className?: string;
+  size?: "sm" | "md" | "lg" | undefined
 }
 
-export default SubmitBtn
+const SubmitBtn = ({ text, loadingText, className, size="md" }: SubmitBtnProps) => {
+  const { pending, data } = useFormStatus();
+  console.log("FORM DATA: ", data)
+
+  return (
+    <Button  size={size} isLoading={pending} type="submit" className={`bg-white text-black ${className}`}>
+      {pending ? loadingText : text}
+    </Button>
+  );
+};
+
+export default SubmitBtn;

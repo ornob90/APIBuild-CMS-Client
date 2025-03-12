@@ -1,25 +1,9 @@
 // app/projects/page.tsx
 
+import { getProjectsByUser } from "@/utils/projects.utils";
 import Table from "../shared/Table";
 import { RiDeleteBinLine } from "react-icons/ri";
-
-export const projects = [
-  {
-    rowNumber: "1",
-    projectName: "Project A",
-    action: <RiDeleteBinLine className=" text-red-500" />,
-  },
-  {
-    rowNumber: "2",
-    projectName: "Project B",
-    action: <RiDeleteBinLine className=" text-red-500" />,
-  },
-  {
-    rowNumber: "3",
-    projectName: "Project C",
-    action: <RiDeleteBinLine className=" text-red-500" />,
-  },
-];
+import { Project } from "@/types/projects.types";
 
 const headers = [
   { key: "rowNumber", label: "No." },
@@ -27,7 +11,15 @@ const headers = [
   { key: "action", label: "Action", className: "text-center" }, // Center the action column
 ];
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const userProjects = await getProjectsByUser();
+
+  const projects = userProjects.map((project: Project, idx) => ({
+    rowNumber: `${idx + 1}`,
+    action: <RiDeleteBinLine className=" text-red-500" />,
+    ...project,
+  }));
+
   return (
     <div className="px-4">
       <Table

@@ -1,17 +1,17 @@
 "use server";
 
-import { getToken, setRefreshAndAccessToken } from "@/libs/auth.libs";
+import { setRefreshAndAccessToken } from "@/libs/auth.libs";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-import { ApiStatus } from "@/types/globals.types";
+import { ApiStatus, ServerActionState } from "@/types/globals.types";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function login(
-  prevState: { message: string; status: ApiStatus },
+  prevState: ServerActionState,
   formData: FormData
-): Promise<{ message: string; status: ApiStatus }> {
+): Promise<ServerActionState> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -23,13 +23,13 @@ export async function login(
     body: JSON.stringify({ email, password }),
   });
 
-  const data = await response.json();
+  const responseData = await response.json();
 
-  console.log(data);
-
-  if (data?.acknowledgement === false) {
-    return { message: data?.message, status: ApiStatus.ERROR };
+  if (responseData?.acknowledgement === false) {
+    return { message: responseData?.message, status: ApiStatus.ERROR };
   }
+
+  const data = responseData?.data;
 
   const { accessToken, refreshToken } = data;
 
@@ -38,4 +38,13 @@ export async function login(
   // Redirect on success
   redirect("/");
   // return { message: "Login Successfull", status: ApiStatus.FINISH };
+}
+
+export async function logout() {
+  const cookieStore = cookies();
+
+  cookieStore.delete("accessToken");
+  cookieStore.delete("refreshToken");
+
+  redirect("/login");
 }
