@@ -1,16 +1,30 @@
 "use client";
 
 import PasswordInput from "@/components/shared/PasswordInput";
-import { RegisterFormData } from "@/types/auth.types";
+import { useAxios } from "@/hooks/useAxios";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import Link from "next/link";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useState } from "react";
+import { ApiStatus } from "@/types/globals.types";
+import { useRouter } from "next/navigation";
 
-// Define the form data structure with TypeScript
+// Define the form data structure matching the backend DTO
+interface RegisterFormData {
+  userName: string;
+  displayName: string;
+  email: string;
+  password: string;
+}
 
 const RegisterForm = () => {
-  // Initialize useForm with TypeScript typing and default values
+  // custom or package hooks
+  const axiosInstance = useAxios({
+    isPrivate: false,
+  });
+  
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -18,18 +32,30 @@ const RegisterForm = () => {
   } = useForm<RegisterFormData>({
     defaultValues: {
       userName: "",
+      displayName: "",
       email: "",
       password: "",
-      firstName: "",
-      lastName: "",
     },
   });
 
-  // Define the submit handler
-  const onSubmit: SubmitHandler<RegisterFormData> = (data) => {
-    console.log("Registration submitted:", data);
-    // Replace with your API call, e.g.:
-    // await fetch('/api/register', { method: 'POST', body: JSON.stringify(data) });
+  // states
+  const [registerStatus, setRegisterStatus] = useState<ApiStatus>(
+    ApiStatus.IDLE
+  );
+
+  const onSubmit: SubmitHandler<RegisterFormData> = async (data) => {
+    setRegisterStatus(ApiStatus.PENDING);
+    try {
+      const response = await axiosInstance.post("/auth/register", data);
+      console.log("Registration successful:", response.data);
+      setRegisterStatus(ApiStatus.FINISH);
+      router.push("/login");
+      // Optionally redirect or show a success message
+    } catch (error) {
+      console.error("Registration failed:", error);
+      setRegisterStatus(ApiStatus.ERROR);
+      // Handle error (e.g., show error message to user)
+    }
   };
 
   return (
@@ -43,14 +69,26 @@ const RegisterForm = () => {
         label="Username"
         variant="underlined"
         {...register("userName", {
-          required: "Username is required",
-          minLength: {
-            value: 3,
-            message: "Username must be at least 3 characters",
-          },
+          required: "User Name is required",
+          validate: (value) =>
+            typeof value === "string" || "User Name needs to be a string",
         })}
         isInvalid={!!errors.userName}
         errorMessage={errors.userName?.message}
+      />
+
+      {/* Display Name Input */}
+      <Input
+        type="text"
+        label="Display Name"
+        variant="underlined"
+        {...register("displayName", {
+          required: "Display Name is required",
+          validate: (value) =>
+            typeof value === "string" || "Display Name needs to be a string",
+        })}
+        isInvalid={!!errors.displayName}
+        errorMessage={errors.displayName?.message}
       />
 
       {/* Email Input */}
@@ -73,52 +111,25 @@ const RegisterForm = () => {
       <PasswordInput
         label="Password"
         variant="underlined"
-        registerOptions={{
-            required: "Password is required",
-            minLength: {
-                value: 6,
-                message: "Password must be at least 6 characters",
-            },
-        }}
         register={register}
+        registerOptions={{
+          required: "Password is required",
+          minLength: {
+            value: 6,
+            message: "Password needs to be at least 6 characters long",
+          },
+        }}
         isInvalid={!!errors.password}
         errorMessage={errors.password?.message}
       />
 
-      {/* First Name Input */}
-      <Input
-        type="text"
-        label="First Name"
-        variant="underlined"
-        {...register("firstName", {
-          required: "First Name is required",
-          minLength: {
-            value: 2,
-            message: "First Name must be at least 2 characters",
-          },
-        })}
-        isInvalid={!!errors.firstName}
-        errorMessage={errors.firstName?.message}
-      />
-
-      {/* Last Name Input */}
-      <Input
-        type="text"
-        label="Last Name"
-        variant="underlined"
-        {...register("lastName", {
-          required: "Last Name is required",
-          minLength: {
-            value: 2,
-            message: "Last Name must be at least 2 characters",
-          },
-        })}
-        isInvalid={!!errors.lastName}
-        errorMessage={errors.lastName?.message}
-      />
-
       {/* Submit Button */}
-      <Button type="submit" className="bg-white text-black">
+      <Button
+        type="submit"
+        className="bg-white text-black"
+        isLoading={registerStatus === ApiStatus.PENDING}
+        isDisabled={registerStatus === ApiStatus.PENDING}
+      >
         Register
       </Button>
 

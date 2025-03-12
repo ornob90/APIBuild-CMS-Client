@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/home/Sidebar";
+import PrivateComponentWrapper from "@/components/wrappers/PrivateComponentWrapper";
+import BodyWrapper from "@/components/wrappers/BodyWrapper";
+import { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -24,11 +27,12 @@ export default function RootLayout({
         className={`${poppins.className}   bg-white min-h-screen dark:bg-dark text-black dark:text-white antialiased `}
       >
         <section className=" flex">
-          <section className=" w-[20%]">
+          <PrivateComponentWrapper className=" w-[20%]">
             <Sidebar />
-          </section>
-          <section className=" w-[80%] ">{children}</section>
+          </PrivateComponentWrapper>
+          <BodyWrapper>{children}</BodyWrapper>
         </section>
+        <Toaster />
       </body>
     </html>
   );
