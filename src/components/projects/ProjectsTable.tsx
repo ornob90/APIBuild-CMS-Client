@@ -11,8 +11,16 @@ const headers = [
   { key: "action", label: "Action", className: "text-center" }, // Center the action column
 ];
 
-export default async function ProjectsPage() {
-  const userProjects = await getProjectsByUser();
+export interface ProjectsTableProps {
+  page: number;
+}
+
+export default async function ProjectsTable({ page }: ProjectsTableProps) {
+  const limit = 2;
+  const { projects: userProjects, totalPages } = await getProjectsByUser(
+    page,
+    limit
+  );
 
   const projects = userProjects.map((project: Project, idx) => ({
     rowNumber: `${idx + 1}`,
@@ -25,6 +33,11 @@ export default async function ProjectsPage() {
       <Table
         data={projects}
         headers={headers}
+        paginationProps={{
+          initialPage: page ?? 1,
+          total: totalPages ?? 0,
+          
+        }}
         // classNameForContainer="bg-slate-800"
         // className="text-white border border-slate-600"
         // classNameForHeader="bg-slate-700 text-white border border-slate-600"

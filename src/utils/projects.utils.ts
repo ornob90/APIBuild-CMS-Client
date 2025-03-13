@@ -5,7 +5,16 @@ import { ApiStatus, ServerActionState } from "@/types/globals.types";
 import { Project } from "@/types/projects.types";
 import { revalidateTag } from "next/cache";
 
-export const getProjectsByUser = async (): Promise<Project[]> => {
+export const getProjectsByUser = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<{
+  projects: Project[];
+  total?: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
+}> => {
   const token = await getToken();
 
   if (!token) {
@@ -13,15 +22,18 @@ export const getProjectsByUser = async (): Promise<Project[]> => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const response = await fetch(process.env.SERVER_BASE_URL! + "/projects", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    next: {
-      tags: ["projects-by-user"],
-    },
-  });
+  const response = await fetch(
+    process.env.SERVER_BASE_URL! + `/projects?page=${page}&limit=${limit}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      next: {
+        tags: [`projects-by-user_page_${page}`],
+      },
+    }
+  );
 
   const responseData = await response.json();
 
@@ -31,7 +43,7 @@ export const getProjectsByUser = async (): Promise<Project[]> => {
     return responseData.data;
   }
 
-  return [];
+  return { projects: [], total: 0 };
 };
 
 export const createProject = async (
@@ -39,6 +51,7 @@ export const createProject = async (
   formData: FormData
 ): Promise<ServerActionState> => {
   const projectName = formData.get("projectName");
+  const page = Number(formData.get("page"))
 
   const token = await validateSession();
   console.log("projectName", projectName);
@@ -52,9 +65,9 @@ export const createProject = async (
   });
 
   const responseData = await response.json();
-  console.log(responseData);
+  // console.log(responseData);
   if (responseData?.acknowledgement) {
-    revalidateTag("projects-by-user");
+    revalidateTag(`projects-by-user_page_${page}`);
     return {
       message: "Project Created Successfully",
       status: ApiStatus.FINISH,

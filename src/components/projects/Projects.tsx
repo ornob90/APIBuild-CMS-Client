@@ -5,12 +5,16 @@ import AddProjectModal from "./AddProjectModal";
 // import AddApiModal from "../apis/ApiAddModal";
 // import AddTableModal from "../tables/AddTableModal";
 
-const Projects = () => {
+export interface ProjectsProps {
+  page: number;
+}
+
+const Projects = ({ page }: ProjectsProps) => {
   return (
     <SectionContainer>
       {/* <SectionTitle title="Projects" rightTemplate={<AddApiModal />}/> */}
       <SectionTitle title="Projects" rightTemplate={<AddProjectModal />} />
-      <ProjectsTable />
+      <ProjectsTable page={page}/>
     </SectionContainer>
   );
 };

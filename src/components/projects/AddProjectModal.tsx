@@ -10,6 +10,7 @@ import SubmitBtn from "../shared/SubmitBtn";
 import { initialFormActionState } from "@/data/actions.data";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import { useSearchParams } from "next/navigation";
 
 export default function AddProjectModal() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -17,6 +18,8 @@ export default function AddProjectModal() {
     createProject,
     initialFormActionState
   );
+  const searchParams = useSearchParams();
+  const page = searchParams.get("page") || "1";
 
   useEffect(() => {
     if (state && state?.message && !state.status) {
@@ -56,6 +59,7 @@ export default function AddProjectModal() {
                     }
                     labelPlacement="outside"
                   />
+                  <input type="hidden" name="page" value={page} />
                   <SubmitBtn
                     className=" text-sm w-full !px-2 bg-white text-black"
                     size="sm"
