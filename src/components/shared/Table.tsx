@@ -21,6 +21,7 @@ interface TableProps {
   classNameForHeader?: string;
   classNameForTableRow?: string;
   paginationProps?: PaginationProps;
+  showPagination?: boolean;
 }
 
 const Table = ({
@@ -31,6 +32,7 @@ const Table = ({
   classNameForHeader = "",
   classNameForTableRow = "",
   paginationProps,
+  showPagination,
 }: TableProps) => {
   return (
     <section className=" space-y-4">
@@ -84,7 +86,7 @@ const Table = ({
         </table>
       </div>
 
-      <ServerPagination {...paginationProps} />
+      {showPagination && <ServerPagination {...paginationProps} />}
     </section>
   );
 };

@@ -2,8 +2,8 @@
 
 import { getProjectsByUser } from "@/utils/projects.utils";
 import Table from "../shared/Table";
-import { RiDeleteBinLine } from "react-icons/ri";
 import { Project } from "@/types/projects.types";
+import DeleteProjectBtn from "./DeleteProjectBtn";
 
 const headers = [
   { key: "rowNumber", label: "No." },
@@ -16,15 +16,16 @@ export interface ProjectsTableProps {
 }
 
 export default async function ProjectsTable({ page }: ProjectsTableProps) {
-  const limit = 2;
-  const { projects: userProjects, totalPages } = await getProjectsByUser(
-    page,
-    limit
-  );
+  const limit = 10;
+  const {
+    projects: userProjects,
+    totalPages,
+    total,
+  } = await getProjectsByUser(page, limit);
 
   const projects = userProjects.map((project: Project, idx) => ({
     rowNumber: `${idx + 1}`,
-    action: <RiDeleteBinLine className=" text-red-500" />,
+    action: <DeleteProjectBtn project={project} />,
     ...project,
   }));
 
@@ -36,8 +37,8 @@ export default async function ProjectsTable({ page }: ProjectsTableProps) {
         paginationProps={{
           initialPage: page ?? 1,
           total: totalPages ?? 0,
-          
         }}
+        showPagination={!!(total && total > limit)}
         // classNameForContainer="bg-slate-800"
         // className="text-white border border-slate-600"
         // classNameForHeader="bg-slate-700 text-white border border-slate-600"

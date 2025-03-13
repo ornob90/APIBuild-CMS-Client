@@ -1,3 +1,4 @@
 export interface Project {
-    projectName: string
+    projectName: string,
+    _id?: string
 }
