@@ -7,7 +7,7 @@ import { SiPolymerproject } from "react-icons/si";
 export const sidebarTabs = [
   { tab: "Dashboard", icon: <MdOutlineDashboard />, href: "/" },
   { tab: "Projects", icon: <SiPolymerproject />, href: "/projects" },
+  { tab: "Tables", icon: <FaDatabase />, href: "/tables" },
   { tab: "APIs", icon: <FaCodeMerge />, href: "/apis" },
   { tab: "Tokens", icon: <MdToken />, href: "/tokens" },
-  { tab: "Data", icon: <FaDatabase />, href: "/data" },
 ];

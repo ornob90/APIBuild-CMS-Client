@@ -46,12 +46,43 @@ export const getProjectsByUser = async (
   return { projects: [], total: 0 };
 };
 
+export const getAllProjectsByUser = async (): Promise<{
+  projects: Project[];
+}> => {
+  const token = await getToken();
+
+  if (!token) {
+    throw new Error("User Not Logged In");
+  }
+
+  const response = await fetch(
+    process.env.SERVER_BASE_URL! + `/projects?all=true`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      next: {
+        tags: ["all-projects-by-user"], // Unique tag for revalidation
+      },
+    }
+  );
+
+  const responseData = await response.json();
+
+  if (responseData?.acknowledgement) {
+    return { projects: responseData.data.projects }; // Adjust based on backend response
+  }
+
+  return { projects: [] };
+};
+
 export const createProject = async (
   prevState: ServerActionState,
   formData: FormData
 ): Promise<ServerActionState> => {
   const projectName = formData.get("projectName");
-  const page = Number(formData.get("page"))
+  const page = Number(formData.get("page"));
 
   const token = await validateSession();
   console.log("projectName", projectName);

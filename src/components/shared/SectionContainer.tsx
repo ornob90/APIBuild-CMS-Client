@@ -1,10 +1,20 @@
+"use client"
+import useGetAllProjectsByUser from "@/hooks/useGetAllProjectsByUser";
+import { ApiStatus } from "@/types/globals.types";
 import React from "react";
+import FullScreenLoading from "./FullScreenLoading";
 
 interface SectionContainerProps {
   children: React.ReactNode;
 }
 
 const SectionContainer = ({ children }: SectionContainerProps) => {
+  const { fetchStatus } = useGetAllProjectsByUser();
+
+  if (fetchStatus === ApiStatus.IDLE) {
+    return <FullScreenLoading />;
+  }
+
   return <section className=" px-4 py-6 space-y-6">{children}</section>;
 };
 

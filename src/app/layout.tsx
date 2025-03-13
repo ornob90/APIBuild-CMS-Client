@@ -4,7 +4,7 @@ import "./globals.css";
 import Sidebar from "@/components/home/Sidebar";
 import PrivateComponentWrapper from "@/components/wrappers/PrivateComponentWrapper";
 import BodyWrapper from "@/components/wrappers/BodyWrapper";
-import { Toaster } from "react-hot-toast";
+import Providers from "@/providers/Providers";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -26,13 +26,14 @@ export default function RootLayout({
       <body
         className={`${poppins.className}   bg-white min-h-screen dark:bg-dark text-black dark:text-white antialiased `}
       >
-        <section className=" flex">
-          <PrivateComponentWrapper className=" w-[20%]">
-            <Sidebar />
-          </PrivateComponentWrapper>
-          <BodyWrapper>{children}</BodyWrapper>
-        </section>
-        <Toaster />
+        <Providers>
+          <section className=" flex">
+            <PrivateComponentWrapper className=" w-[20%]">
+              <Sidebar />
+            </PrivateComponentWrapper>
+            <BodyWrapper>{children}</BodyWrapper>
+          </section>
+        </Providers>
       </body>
     </html>
   );

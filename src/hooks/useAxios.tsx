@@ -17,7 +17,7 @@ export const useAxios = ({
     async function getTokenInfo() {
       const token = await getToken();
 
-      console.log("TOKNE: ", token)
+      console.log("TOKNE: ", token);
 
       setToken(token);
     }
@@ -34,7 +34,7 @@ export const useAxios = ({
     ...axiosOptions,
   };
 
-  console.log("baseConfig", baseConfig);
+  // console.log("baseConfig", baseConfig);
 
   return axios.create(baseConfig);
 };

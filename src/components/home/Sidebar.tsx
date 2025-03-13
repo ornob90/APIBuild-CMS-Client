@@ -1,5 +1,4 @@
 import { sidebarTabs } from "@/data/home.data";
-import { Button } from "@heroui/button";
 import Link from "next/link";
 import React from "react";
 import LogoutBtn from "../shared/LogoutBtn";

@@ -23,9 +23,7 @@ const DeleteProjectBtn = ({ project }: { project: Project }) => {
   const handleDelete = async () => {
     try {
       setDeleteStatus(ApiStatus.PENDING);
-      const response = await axiosPrivate.delete(
-        process.env.NEXT_PUBLIC_BASE_URL + `/projects/${project?._id}`
-      );
+      const response = await axiosPrivate.delete(`/projects/${project?._id}`);
 
       if (response.data?.acknowledgement) {
         toast.success("Project Deleted Successfully!");
