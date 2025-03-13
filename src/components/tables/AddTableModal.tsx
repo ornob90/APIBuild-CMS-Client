@@ -19,20 +19,41 @@ import { Radio, RadioGroup } from "@heroui/radio";
 import { AiFillPlusCircle } from "react-icons/ai";
 import { FaCircleMinus } from "react-icons/fa6";
 import ProjectsSelect from "../shared/ProjectsSelect";
+import { useAppSelector } from "@/store/store-hooks";
+import { useAxios } from "@/hooks/useAxios";
+import { ApiStatus } from "@/types/globals.types";
+import toast from "react-hot-toast";
 
 const AddTableModal = () => {
   // custom or package hooks
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { projects } = useAppSelector((state) => state.project);
+  const axiosPrivate = useAxios();
 
   // states
+  const [tableCreationStatus, setTableCreationStatus] = useState<ApiStatus>(
+    ApiStatus.IDLE
+  );
   const [columns, setColumns] = useState<ColumnData[]>([initialColumnForm]);
   const [tableName, setTableName] = useState("");
-  const [selectedProject, setSelectedProject] = useState<string>("");
+  const [selectedProject, setSelectedProject] = useState<string>(
+    () => projects[0]?._id || ""
+  );
   const [errors, setErrors] = useState<TableFormError>({
     ...initialTableError,
   });
 
-  const handleSubmit = () => {
+
+  const resetStates = () => {
+    onOpenChange();
+    setTableName("");
+    setSelectedProject("");
+    setColumns([
+      { name: "", required: false, type: "String", unique: false },
+    ]);
+  }
+
+  const handleSubmit = async () => {
     // setErrors({ ...initialTableError });
 
     const formErrors = { ...initialTableError };
@@ -57,16 +78,28 @@ const AddTableModal = () => {
     }
 
     const newTable = {
-      name: tableName,
-      project: selectedProject,
+      tableName: tableName,
+      projectId: selectedProject,
       columns,
     };
-    console.log("Table created:", newTable);
-    return;
-    onOpenChange();
-    setTableName("");
-    setSelectedProject("");
-    setColumns([{ name: "", required: false, type: "String", unique: false }]);
+    // console.log("Table created:", newTable);
+
+    try {
+      setTableCreationStatus(ApiStatus.PENDING);
+      const response = await axiosPrivate.post("/tables", newTable);
+
+      if (response.data?.acknowledgement) {
+        setTableCreationStatus(ApiStatus.FINISH);
+        toast.success("Table Created Successfully!");
+        resetStates()
+      } else {
+        setTableCreationStatus(ApiStatus.ERROR);
+        toast.error("Failed to create table. Try Again!");
+      }
+    } catch {
+      setTableCreationStatus(ApiStatus.ERROR);
+      toast.error("Failed to create table. Try Again!");
+    }
   };
 
   //   console.log("ERRORS: ", { tableName, initialTableError, errors });
@@ -79,6 +112,12 @@ const AddTableModal = () => {
       setSelectedProject("");
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (Array.isArray(projects) && projects[0]?._id) {
+      setSelectedProject(projects[0]._id);
+    }
+  }, [projects]);
 
   return (
     <>
@@ -117,7 +156,7 @@ const AddTableModal = () => {
                   errorMessage={errors.tableName}
                   isInvalid={!!errors.tableName}
                 />
-                {columns.map((_, index) => (
+                {columns.map((column, index) => (
                   <ColumnForm
                     key={index}
                     index={index}
@@ -125,9 +164,11 @@ const AddTableModal = () => {
                     errorMessage={errors.columnNames[index]}
                     setColumns={setColumns}
                     setErrors={setErrors}
+                    column={column}
                   />
                 ))}
                 <Button
+                  isLoading={tableCreationStatus === ApiStatus.PENDING}
                   className="col-span-2 bg-white text-black"
                   onPress={handleSubmit}
                 >
@@ -146,6 +187,7 @@ function ColumnForm({
   index,
   columns,
   errorMessage,
+  column,
   setColumns,
   setErrors,
 }: ColumnFormProps) {
@@ -193,6 +235,7 @@ function ColumnForm({
         label="Required"
         name="required"
         orientation="horizontal"
+        value={column.required ? "true" : "false"}
         onChange={(e) => handleChange("required", e.target.value === "true")}
       >
         <Radio value={"true"}>Yes</Radio>
@@ -202,6 +245,7 @@ function ColumnForm({
         label="Unique"
         name="unique"
         orientation="horizontal"
+        value={column.unique ? "true" : "false"}
         onChange={(e) => handleChange("unique", e.target.value === "true")}
       >
         <Radio value={"true"}>Yes</Radio>

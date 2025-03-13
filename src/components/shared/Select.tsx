@@ -8,7 +8,11 @@ const Select = ({ options, className, optionProps, onChange }: SelectProps) => {
         className={` w-full   bg-lightGray   text-sm   focus:outline-none   ${className}`}
       >
         {options.map((option) => (
-          <option key={option.label} className={` ${optionProps?.className}`}>
+          <option
+            key={option.label}
+            value={option.value}
+            className={` ${optionProps?.className}`}
+          >
             {option.label}
           </option>
         ))}
@@ -21,13 +25,13 @@ export const SelectHookForm = ({
   options,
   className,
   optionProps,
-//   register,
-//   registerOptions,
+  //   register,
+  //   registerOptions,
   name,
   classNameForWrapper,
   label,
   value,
-  onChange
+  onChange,
 }: SelectHookFormProps) => {
   return (
     <div
@@ -55,7 +59,11 @@ export const SelectHookForm = ({
           onChange={onChange}
         >
           {options.map((option) => (
-            <option key={option.label} className={` ${optionProps?.className}`}>
+            <option
+              key={option.label}
+              value={option?.value}
+              className={`${optionProps?.className}`}
+            >
               {option.label}
             </option>
           ))}

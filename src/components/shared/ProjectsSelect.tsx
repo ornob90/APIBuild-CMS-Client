@@ -12,8 +12,10 @@ const ProjectsSelect = (props: ProjectsSelectProps) => {
 
   const projectsOptions = projects.map((project) => ({
     label: project.projectName,
-    value: project.projectName,
+    value: project?._id || "",
   }));
+
+  // console.log("PROJECTS: ", projectsOptions)
 
   return (
     <Select

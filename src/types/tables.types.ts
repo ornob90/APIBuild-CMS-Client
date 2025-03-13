@@ -11,6 +11,7 @@ export interface ColumnFormProps {
   index: number;
   columns: ColumnData[];
   errorMessage?: string;
+  column: ColumnData;
   setColumns: React.Dispatch<React.SetStateAction<ColumnData[]>>;
   setErrors: React.Dispatch<React.SetStateAction<TableFormError>>;
 }
