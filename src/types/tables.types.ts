@@ -16,7 +16,21 @@ export interface ColumnFormProps {
   setErrors: React.Dispatch<React.SetStateAction<TableFormError>>;
 }
 
+export interface Table {
+  _id?: string;
+  projectId: string;
+  tableName: string;
+}
+
 export interface TableFormError {
   tableName: string;
   columnNames: (string | "")[];
+}
+
+export interface TablesByUserResponse {
+  tables?: Table[];
+  total?: number;
+  page?: number;
+  limit?: number;
+  totalPage?: number;
 }

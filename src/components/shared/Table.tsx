@@ -37,7 +37,7 @@ const Table = ({
   return (
     <section className=" space-y-4">
       <div
-        className={`overflow-x-auto bg-darkGray border  border-gray-700  rounded-r-lg !rounded-l-[17px] ${classNameForContainer}`}
+        className={`overflow-x-auto bg-darkGray border  border-gray-700   rounded-2xl ${classNameForContainer}`}
       >
         <table
           className={`w-full text-sm text-left rtl:text-right text-gray-500 gradient-border rounded-l-primary ${className}`}

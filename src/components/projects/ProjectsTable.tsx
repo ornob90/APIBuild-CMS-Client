@@ -1,9 +1,7 @@
-// app/projects/page.tsx
-
-import { getProjectsByUser } from "@/utils/projects.utils";
 import Table from "../shared/Table";
 import { Project } from "@/types/projects.types";
-import DeleteProjectBtn from "./DeleteProjectBtn";
+import NoDataUI from "../shared/NoDataUI";
+import AddProjectModal from "./AddProjectModal";
 
 const headers = [
   { key: "rowNumber", label: "No." },
@@ -13,37 +11,33 @@ const headers = [
 
 export interface ProjectsTableProps {
   page: number;
+  projects: Project[];
+  haveProjects: boolean;
+  totalPages: number;
+  total: number;
+  limit: number
 }
 
-export default async function ProjectsTable({ page }: ProjectsTableProps) {
-  const limit = 10;
-  const {
-    projects: userProjects,
-    totalPages,
-    total,
-  } = await getProjectsByUser(page, limit);
-
-  const projects = userProjects.map((project: Project, idx) => ({
-    rowNumber: `${idx + 1}`,
-    action: <DeleteProjectBtn project={project} />,
-    ...project,
-  }));
+export default async function ProjectsTable({ page, projects, haveProjects, total, totalPages, limit }: ProjectsTableProps) {
+ 
 
   return (
     <div className="px-4">
-      <Table
-        data={projects}
-        headers={headers}
-        paginationProps={{
-          initialPage: page ?? 1,
-          total: totalPages ?? 0,
-        }}
-        showPagination={!!(total && total > limit)}
-        // classNameForContainer="bg-slate-800"
-        // className="text-white border border-slate-600"
-        // classNameForHeader="bg-slate-700 text-white border border-slate-600"
-        // classNameForTableRow="[&:nth-child(even)]:bg-slate-900 [&:nth-child(odd)]:bg-slate-800 border border-slate-600"
-      />
+      {haveProjects ? (
+        <Table
+          data={projects}
+          headers={headers}
+          paginationProps={{
+            initialPage: page ?? 1,
+            total: totalPages ?? 0,
+          }}
+          showPagination={!!(total && total > limit)}
+        />
+      ) : (
+        <NoDataUI
+          createTemplate={<AddProjectModal />}
+        />
+      )}
     </div>
   );
 }

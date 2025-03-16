@@ -23,12 +23,16 @@ import { useAppSelector } from "@/store/store-hooks";
 import { useAxios } from "@/hooks/useAxios";
 import { ApiStatus } from "@/types/globals.types";
 import toast from "react-hot-toast";
+import { CiViewTable } from "react-icons/ci";
+import { customRevalidateTag } from "@/utils/globals.utils";
+import { useSearchParams } from "next/navigation";
 
 const AddTableModal = () => {
   // custom or package hooks
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { projects } = useAppSelector((state) => state.project);
   const axiosPrivate = useAxios();
+  const page = useSearchParams().get("page") ?? "1"
 
   // states
   const [tableCreationStatus, setTableCreationStatus] = useState<ApiStatus>(
@@ -82,7 +86,7 @@ const AddTableModal = () => {
       projectId: selectedProject,
       columns,
     };
-    // console.log("Table created:", newTable);
+    // return console.log("Table created:", newTable);
 
     try {
       setTableCreationStatus(ApiStatus.PENDING);
@@ -91,6 +95,7 @@ const AddTableModal = () => {
       if (response.data?.acknowledgement) {
         setTableCreationStatus(ApiStatus.FINISH);
         toast.success("Table Created Successfully!");
+        customRevalidateTag(`tables_by_user_page_${page}`)
         resetStates()
       } else {
         setTableCreationStatus(ApiStatus.ERROR);
@@ -121,7 +126,7 @@ const AddTableModal = () => {
 
   return (
     <>
-      <Button onPress={onOpen}>Add Table</Button>
+      <Button onPress={onOpen} variant="shadow" className=" bg-white text-black"  endContent={<CiViewTable />}>Create Table</Button>
       <Modal
         size="2xl"
         isOpen={isOpen}
@@ -171,6 +176,7 @@ const AddTableModal = () => {
                   isLoading={tableCreationStatus === ApiStatus.PENDING}
                   className="col-span-2 bg-white text-black"
                   onPress={handleSubmit}
+                  
                 >
                   Create Table
                 </Button>

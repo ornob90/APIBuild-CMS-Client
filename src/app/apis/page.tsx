@@ -1,9 +1,8 @@
-import React from 'react'
+import Apis from "@/components/apis/Apis";
+import React from "react";
 
 const Page = () => {
-  return (
-    <div>Page</div>
-  )
-}
+  return <Apis />;
+};
 
-export default Page
+export default Page;

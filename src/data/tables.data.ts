@@ -16,6 +16,20 @@ export const columnTypeOptions: Option[] = [
   },
 ];
 
+export const initialColumnForm: ColumnData = {
+  name: "",
+  required: false,
+  type: "String",
+  unique: false,
+};
+export const initialTableError: TableFormError = {
+  tableName: "",
+  columnNames: [],
+};
 
-export const initialColumnForm: ColumnData  = { name: "", required: false, type: "String", unique: false }
-export const initialTableError: TableFormError = { tableName: "", columnNames: [] }
+export const tablesHeaderData = [
+  { key: "rowNumber", label: "No." },
+  { key: "projectName", label: "Project Name" },
+  { key: "tableName", label: "Table Name" },
+  { key: "action", label: "Action", className: "text-center" }, // Center the action column
+];

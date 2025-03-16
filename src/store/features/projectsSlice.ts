@@ -19,6 +19,7 @@ export const projectSlice = createSlice({
     addProjects: (state, { payload }) => {
       state.projects = payload;
     },
+    
     setTopRowValueOfProjects: (state, { payload }) => {
       return {
         ...state,

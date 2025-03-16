@@ -16,6 +16,7 @@ import Label from "../shared/Label";
 import { extractParams, isValidEndpoint } from "@/utils/regex.utils";
 import { ApiFormData, APIFormError } from "@/types/apis.types";
 import ParamsForm from "./ParamsForm";
+import TablesSelect from "../shared/TablesSelect";
 
 const dummyTables = [
   { value: "1", label: "Users" },
@@ -55,7 +56,7 @@ const AddApiModal = ({}) => {
       }));
     }
 
-    // console.log(formData);
+    console.log("formData", formData);
   };
 
   const handlePathBlur = () => {
@@ -160,11 +161,10 @@ const AddApiModal = ({}) => {
                   />
                 }
               />
-              <SelectHookForm
+              <TablesSelect
                 name="tableId"
                 value={formData.tableId}
                 onChange={(e) => handleChange(e)}
-                options={dummyTables}
                 label={
                   <Label
                     label="Table"
@@ -175,7 +175,7 @@ const AddApiModal = ({}) => {
                   />
                 }
               />
-              <Input
+              {/* <Input
                 name="queryField"
                 value={formData.queryField}
                 onChange={(e) => handleChange(e)}
@@ -190,7 +190,7 @@ const AddApiModal = ({}) => {
                 }
                 labelPlacement="outside"
                 placeholder="e.g, tab,id,role"
-              />
+              /> */}
               <SelectHookForm
                 name="sortField"
                 value={String(formData.sortField)}

@@ -4,7 +4,7 @@ import { Button } from "@heroui/button";
 const LogoutBtn = () => {
   return (
     <form action={logout}>
-      <Button type="submit" className=" w-full bg-white text-black">
+      <Button variant="bordered" type="submit" className=" w-full  text-white">
         Logout
       </Button>
     </form>
