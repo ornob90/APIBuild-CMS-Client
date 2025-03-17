@@ -22,9 +22,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark ">
+    <html lang="en" className="dark bg-dark">
       <body
-        className={`${poppins.className}   bg-white min-h-screen dark:bg-dark text-black dark:text-white antialiased `}
+        className={`${poppins.className}  max-w-screen-2xl relative   bg-white min-h-screen dark:bg-dark text-black dark:text-white antialiased  mx-auto`}
       >
         <Providers>
           <section className=" flex">

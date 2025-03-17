@@ -17,27 +17,26 @@ export const actionOptions: Option[] = [
 ];
 
 export const findOptions: Option[] = [
-  { value: "findone", label: "Find One" },
+  { value: "findOne", label: "Find One" },
   { value: "findAll", label: "Find All" },
   { value: "aggregate", label: "Aggregate" },
 ];
 
 export const sortOrderOptions: Option[] = [
-  { value: "1", label: "Ascending" },
-  { value: "-1", label: "Descending" },
+  { value: "asc", label: "Ascending" },
+  { value: "desc", label: "Descending" },
 ];
 
 export const aggregateTypeOptions: Option[] = [
   { value: "count", label: "Count" },
   { value: "sum", label: "Sum" },
-  { value: "average", label: "Average" },
+  { value: "avg", label: "Average" },
 ];
-
 
 export const initialFormData = {
   path: "",
-  method: "",
-  action: "",
+  method: "GET",
+  action: "find",
   tableId: "",
   queryField: "",
   sortField: "",
@@ -47,4 +46,13 @@ export const initialFormData = {
   aggregateType: "",
   aggregateField: "",
   params: [],
-}
+};
+
+export const apisTableHeader = [
+  { key: "rowNumber", label: "No." },
+  { key: "tableName", label: "Table" },
+  { key: "method", label: "Method" },
+  { key: "path", label: "Path" },
+  { key: "action", label: "Operation" },
+  { key: "delete", label: "Action" },
+];

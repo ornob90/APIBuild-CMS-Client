@@ -20,6 +20,7 @@ export interface Table {
   _id?: string;
   projectId: string;
   tableName: string;
+  columnNames: string[];
 }
 
 export interface TableFormError {

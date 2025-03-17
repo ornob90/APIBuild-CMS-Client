@@ -40,7 +40,7 @@ const ConfirmDeleteModel = ({
                 <Button
                   disabled={isConfirmLoad}
                   onPress={() => onConfirmation(ConfirmModalBtnEnum.CONFIRM)}
-                  className=" rounded-lg bg-lightGray text-white"
+                  className=" rounded-lg bg-white text-darkGray  font-medium"
                   isLoading={isConfirmLoad}
                 >
                   Confirm

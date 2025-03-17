@@ -5,7 +5,7 @@ import LogoutBtn from "../shared/LogoutBtn";
 
 const Sidebar = () => {
   return (
-    <section className=" border-r py-4 flex  flex-col justify-between items-center border-r-gray-600  h-screen fixed left-0 top-0 w-[20%]  gap-y-4 ">
+    <section className=" border-r py-4 flex  flex-col justify-between items-center border-r-gray-600 2xl:border-l 2xl:border-l-gray-600   h-screen sticky left-0 top-0 !w-[100%]  gap-y-4 ">
       <ul className=" h-fit  flex flex-col         w-full">
         {sidebarTabs.map((tab, index) => (
           <Link

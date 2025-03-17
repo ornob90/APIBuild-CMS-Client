@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/*  eslint-disable-next-line @typescript-eslint/no-explicit-any */
+
 "use client";
 import React, { useEffect, useState } from "react";
 import { Modal, ModalContent, ModalBody, useDisclosure } from "@heroui/modal";
@@ -10,26 +12,53 @@ import {
   actionOptions,
   aggregateTypeOptions,
   sortOrderOptions,
-  initialFormData,
 } from "@/data/apis.data";
 import Label from "../shared/Label";
 import { extractParams, isValidEndpoint } from "@/utils/regex.utils";
 import { ApiFormData, APIFormError } from "@/types/apis.types";
 import ParamsForm from "./ParamsForm";
 import TablesSelect from "../shared/TablesSelect";
+import { useAppSelector } from "@/store/store-hooks";
+import { Option } from "@/types/htmls.types";
+import { ApiStatus } from "@/types/globals.types";
+import { useAxios } from "@/hooks/useAxios";
+import toast from "react-hot-toast";
+import { FaCodeMerge } from "react-icons/fa6";
+import { useSearchParams } from "next/navigation";
+import { customRevalidateTag } from "@/utils/globals.utils";
 
-const dummyTables = [
-  { value: "1", label: "Users" },
-  { value: "2", label: "Orders" },
-  { value: "3", label: "Products" },
-];
+// const dummyTables = [
+//   { value: "1", label: "Users" },
+//   { value: "2", label: "Orders" },
+//   { value: "3", label: "Products" },
+// ];
 
 const AddApiModal = ({}) => {
+  // custom or package hooks
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { tables } = useAppSelector((state) => state.tables);
+  const axiosInstance = useAxios();
+  const searchParams = useSearchParams();
 
   // states
-  const [formData, setFormData] = useState<ApiFormData>({ ...initialFormData });
-
+  const [columnsOfSelectedTable, setColumnsOfSelectedTable] = useState<
+    Option[]
+  >([]);
+  const [formStatus, setFormStatus] = useState<ApiStatus>(ApiStatus.IDLE);
+  const [formData, setFormData] = useState<ApiFormData>({
+    path: "",
+    method: "GET",
+    action: "find",
+    tableId: "",
+    queryField: "",
+    sortField: "",
+    sortOrder: "asc",
+    limit: 0,
+    groupBy: "",
+    aggregateType: "",
+    aggregateField: "",
+    params: [],
+  });
   const [errors, setErrors] = useState<APIFormError>({ path: "" });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,7 +71,7 @@ const AddApiModal = ({}) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formData.path) {
@@ -56,12 +85,68 @@ const AddApiModal = ({}) => {
       }));
     }
 
-    console.log("formData", formData);
+    try {
+      setFormStatus(ApiStatus.PENDING);
+
+      const requestBody = { ...formData };
+
+      requestBody.limit = requestBody?.limit
+        ? +requestBody.limit
+        : requestBody.limit;
+
+      requestBody.method = requestBody.method || "GET";
+      requestBody.action = requestBody.action || "find";
+      requestBody.sortOrder = requestBody.sortOrder || "asc";
+      requestBody.aggregateType = requestBody.aggregateType || "count";
+
+      const response = await axiosInstance.post("/apis", requestBody);
+
+      if (response.data?.acknowledgement) {
+        toast.success("Apis Created Successfully!");
+        setFormStatus(ApiStatus.FINISH);
+
+        customRevalidateTag(
+          `apis_by_user_page_${searchParams.get("page") ?? "1"}`
+        );
+      }
+
+      setFormStatus(ApiStatus.ERROR);
+      onOpenChange();
+    } catch (error: any) {
+      setFormStatus(ApiStatus.ERROR);
+      toast.error(
+        typeof error?.message === "string"
+          ? error?.response?.data?.message
+          : Array.isArray(error?.response?.data?.message)
+          ? error?.response?.data?.message[0]
+          : "Failed to create API"
+      );
+    }
   };
 
   const handlePathBlur = () => {
     if (formData.path && isValidEndpoint(formData.path)) {
       const params = extractParams(formData.path);
+
+      let isNotExistInColumnsOfSelectedTable = false;
+      const invalidParams: string[] = [];
+      const allColumns = columnsOfSelectedTable.map((c) => c.label);
+
+      params.forEach((param: string) => {
+        if (!allColumns.includes(param)) {
+          invalidParams.push(param);
+          isNotExistInColumnsOfSelectedTable = true;
+        }
+      });
+
+      if (isNotExistInColumnsOfSelectedTable) {
+        setErrors((prev) => ({
+          ...prev,
+          path: `${invalidParams.join(
+            ", "
+          )} are not valid columns Selected Table`,
+        }));
+      }
 
       setFormData({
         ...formData,
@@ -81,14 +166,76 @@ const AddApiModal = ({}) => {
 
   useEffect(() => {
     if (!isOpen) {
-      setFormData({ ...initialFormData });
+      setFormData({
+        path: "",
+        method: "GET",
+        action: "find",
+        tableId: "",
+        queryField: "",
+        sortField: "",
+        sortOrder: "asc",
+        limit: 0,
+        groupBy: "",
+        aggregateType: "",
+        aggregateField: "",
+        params: [],
+      });
       setErrors({ path: "" });
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    // console.log("tables:", tables, formData.tableId);
+
+    if (formData?.tableId) {
+      const columns = tables.find(
+        (table) => table._id === formData.tableId
+      )?.columnNames;
+
+      if (columns && columns?.length > 0) {
+        setColumnsOfSelectedTable(
+          columns?.map((column) => {
+            return { value: column, label: column } as Option;
+          })
+        );
+      } else {
+        setColumnsOfSelectedTable([]);
+      }
+    } else if (tables && tables.length > 0) {
+      // setFormData({
+      //   ...formData,
+      //   tableId: (tables && Array.isArray(tables) && tables.length > 0
+      //     ? tables[0]?._id
+      //     : "") as string,
+      // });
+
+      setFormData((prevState) => ({
+        ...prevState,
+        tableId: tables[0]?._id as string,
+      }));
+    }
+  }, [formData.tableId, tables, isOpen]);
+
+  useEffect(() => {
+    if (columnsOfSelectedTable.length === 0) return;
+
+    setFormData({
+      ...formData,
+      groupBy: columnsOfSelectedTable[0].value,
+      aggregateField: columnsOfSelectedTable[0].value,
+      sortField: columnsOfSelectedTable[0].value,
+    });
+  }, [columnsOfSelectedTable]);
+
   return (
     <>
-      <Button onPress={onOpen}>Add API</Button>
+      <Button
+        onPress={onOpen}
+        className=" bg-white text-darkGray px-6 "
+        endContent={<FaCodeMerge />}
+      >
+        Add API
+      </Button>
       <Modal
         isOpen={isOpen}
         size="2xl"
@@ -195,7 +342,7 @@ const AddApiModal = ({}) => {
                 name="sortField"
                 value={String(formData.sortField)}
                 onChange={(e) => handleChange(e)}
-                options={dummyTables}
+                options={columnsOfSelectedTable}
                 label={
                   <Label
                     label="Sort Field"
@@ -238,10 +385,12 @@ const AddApiModal = ({}) => {
                 labelPlacement="outside"
                 placeholder="Limit"
               />
-              <Input
+
+              <SelectHookForm
                 name="groupBy"
-                value={formData.groupBy}
+                value={String(formData.groupBy)}
                 onChange={(e) => handleChange(e)}
+                options={columnsOfSelectedTable}
                 label={
                   <Label
                     label="Group By"
@@ -250,9 +399,8 @@ const AddApiModal = ({}) => {
                     }}
                   />
                 }
-                labelPlacement="outside"
-                placeholder="Group By"
               />
+
               <SelectHookForm
                 name="aggregateType"
                 value={String(formData.aggregateType)}
@@ -268,10 +416,12 @@ const AddApiModal = ({}) => {
                   />
                 }
               />
-              <Input
+
+              <SelectHookForm
                 name="aggregateField"
-                value={formData.aggregateField}
+                value={String(formData.aggregateField)}
                 onChange={(e) => handleChange(e)}
+                options={columnsOfSelectedTable}
                 label={
                   <Label
                     label="Aggregate Field"
@@ -281,10 +431,12 @@ const AddApiModal = ({}) => {
                     }}
                   />
                 }
-                labelPlacement="outside"
-                placeholder="Aggregate Field"
               />
-              <Button type="submit" className="col-span-2 bg-white text-black">
+              <Button
+                isLoading={formStatus === ApiStatus.PENDING}
+                type="submit"
+                className="col-span-2 bg-white text-black"
+              >
                 Submit
               </Button>
             </form>
