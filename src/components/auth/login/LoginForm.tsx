@@ -48,9 +48,9 @@ export default function LoginForm() {
       setRefreshAndAccessToken(accessToken, refreshToken);
 
       router.push("/");
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again.");
-      toast.error("Something went wrong.", err.message);
+      toast.error("Something went wrong.");
     } finally {
       setLoading(false);
     }
