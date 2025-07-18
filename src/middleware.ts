@@ -5,9 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
-  const token = await getToken();
+  const token = getToken();
 
-  // console.log("TOKEN: ", token)
+  console.log("TOKEN: ", token)
 
   // for private routes
   if (!publicRoutes.includes(pathname)) {

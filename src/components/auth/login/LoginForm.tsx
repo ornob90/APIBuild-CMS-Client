@@ -102,6 +102,8 @@ export default function LoginForm() {
               "Something went wrong. Please try again.";
             setError(message);
             toast.error(message);
+          } finally {
+            setDemoLogin(false);
           }
         }}
         isLoading={demoLoging}

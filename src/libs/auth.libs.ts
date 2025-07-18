@@ -20,7 +20,7 @@ export const setRefreshAndAccessToken = async (
   });
 };
 
-export const getToken = async () => {
+export const getToken = () => {
   const cookieStore = cookies();
   const cookie = cookieStore.get("accessToken");
   return cookie?.value;
