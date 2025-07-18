@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark bg-dark">
       <body
-        className={`${poppins.className}  max-w-screen-2xl relative   bg-white min-h-screen dark:bg-dark text-black dark:text-white antialiased  mx-auto`}
+        className={`${poppins.className}  max-w-7xl  overflow-x-hidden relative   bg-white min-h-screen dark:bg-dark text-black dark:text-white antialiased  mx-auto`}
       >
         <Providers>
           <section className=" flex">

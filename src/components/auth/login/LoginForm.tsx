@@ -16,10 +16,10 @@ import { CiLogin } from "react-icons/ci";
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
-  const [demoLoging, setDemoLogin] = useState(false)
+  const [demoLoging, setDemoLogin] = useState(false);
   const [error, setError] = useState("");
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -61,13 +61,8 @@ export default function LoginForm() {
     const { accessToken, refreshToken } = responseData.data;
 
     setRefreshAndAccessToken(accessToken, refreshToken);
-    console.log('hit router')
-    router.push("/")
-
-
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    router.push("/")
+    console.log("hit router");
+    router.push("/");
   };
 
   return (
@@ -92,7 +87,6 @@ export default function LoginForm() {
 
       {error && <p className="text-red-500 text-center">{error}</p>}
 
-      <SubmitBtn text="Sign In" loadingText="Signing In" loading={loading} />
       <Button
         onPress={async () => {
           try {
@@ -118,6 +112,8 @@ export default function LoginForm() {
       >
         Login As Guest
       </Button>
+
+      <SubmitBtn text="Sign In" loadingText="Signing In" loading={loading} />
 
       <p className="text-center">
         New Here?{" "}
