@@ -58,7 +58,7 @@ export default function LoginForm() {
     const { accessToken, refreshToken } = responseData.data;
 
     setRefreshAndAccessToken(accessToken, refreshToken);
-    await new Promise((resolve) => setTimeout(resolve, 50))
+    await new Promise((resolve) => setTimeout(resolve, 100))
     window.open("/", "_self")
   };
 
