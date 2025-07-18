@@ -27,10 +27,7 @@ export default function LoginForm() {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
-        { email, password },
-        {
-          withCredentials: true, // include cookies if needed
-        }
+        { email, password }
       );
 
       const responseData = response.data;
