@@ -1,18 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import SubmitBtn from "@/components/shared/SubmitBtn";
 import { setRefreshAndAccessToken } from "@/libs/auth.libs";
+import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import axios from "axios";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { CiLogin } from "react-icons/ci";
+
 // Assuming you have this
 
 export default function LoginForm() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [demoLoging, setDemoLogin] = useState(false)
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -25,24 +28,7 @@ export default function LoginForm() {
     const password = formData.get("password") as string;
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
-        { email, password }
-      );
-
-      const responseData = response.data;
-
-      if (responseData?.acknowledgement === false) {
-        setError(responseData.message);
-        toast.error(responseData.message);
-        return;
-      }
-
-      const { accessToken, refreshToken } = responseData.data;
-
-      setRefreshAndAccessToken(accessToken, refreshToken);
-
-      router.push("/");
+      handleLogin(email, password);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const message =
@@ -53,6 +39,27 @@ export default function LoginForm() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogin = async (email: string, password: string) => {
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
+      { email, password }
+    );
+
+    const responseData = response.data;
+
+    if (responseData?.acknowledgement === false) {
+      setError(responseData.message);
+      toast.error(responseData.message);
+      return;
+    }
+
+    const { accessToken, refreshToken } = responseData.data;
+
+    setRefreshAndAccessToken(accessToken, refreshToken);
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    window.open("/", "_self")
   };
 
   return (
@@ -78,6 +85,31 @@ export default function LoginForm() {
       {error && <p className="text-red-500 text-center">{error}</p>}
 
       <SubmitBtn text="Sign In" loadingText="Signing In" loading={loading} />
+      <Button
+        onPress={async () => {
+          try {
+            setDemoLogin(true);
+            await handleLogin(
+              process.env.NEXT_PUBLIC_DEMO_EMAIL as string,
+              process.env.NEXT_PUBLIC_DEMO_PASS as string
+            );
+          } catch (err: any) {
+            setDemoLogin(false);
+            const message =
+              err?.response?.data?.message ||
+              "Something went wrong. Please try again.";
+            setError(message);
+            toast.error(message);
+          }
+        }}
+        isLoading={demoLoging}
+        endContent={<CiLogin className=" text-xl font-bold" />}
+        variant="solid"
+        size="md"
+        className="bg-red-500 text-white"
+      >
+        Login As Guest
+      </Button>
 
       <p className="text-center">
         New Here?{" "}
