@@ -1,5 +1,6 @@
 import { AnalyticInfo } from "@/types/dashboard.types";
 import React from "react";
+import DashboardWrapper from "./DashboardWrapper";
 
 const Dashboard = () => {
   const userInfo: AnalyticInfo[] = [
@@ -14,13 +15,15 @@ const Dashboard = () => {
   ];
 
   return (
-    <section className="  flex flex-col gap-y-4">
-      <section className="grid grid-cols-2 gap-x-5">
-        {userInfo.map((info) => (
-          <Info key={info.header} info={info} />
-        ))}
+    <DashboardWrapper>
+      <section className="  flex flex-col gap-y-4">
+        <section className="grid grid-cols-2 gap-x-5">
+          {userInfo.map((info) => (
+            <Info key={info.header} info={info} />
+          ))}
+        </section>
       </section>
-    </section>
+    </DashboardWrapper>
   );
 };
 

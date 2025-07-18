@@ -7,6 +7,7 @@ import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { CiLogin } from "react-icons/ci";
@@ -17,6 +18,8 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [demoLoging, setDemoLogin] = useState(false)
   const [error, setError] = useState("");
+
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,8 +61,13 @@ export default function LoginForm() {
     const { accessToken, refreshToken } = responseData.data;
 
     setRefreshAndAccessToken(accessToken, refreshToken);
+    console.log('hit router')
+    router.push("/")
+
+
     await new Promise((resolve) => setTimeout(resolve, 100))
-    window.open("/", "_self")
+
+    router.push("/")
   };
 
   return (

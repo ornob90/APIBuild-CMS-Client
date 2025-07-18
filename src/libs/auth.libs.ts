@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { redirect } from "next/navigation";
 
-export const setRefreshAndAccessToken = (
+export const setRefreshAndAccessToken = async (
   accessToken: string,
   refreshToken: string
 ) => {
