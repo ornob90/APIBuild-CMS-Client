@@ -3,11 +3,12 @@
 import SubmitBtn from "@/components/shared/SubmitBtn";
 import { setRefreshAndAccessToken } from "@/libs/auth.libs";
 import { Input } from "@heroui/input";
+import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
- // Assuming you have this
+// Assuming you have this
 
 export default function LoginForm() {
   const router = useRouter();
@@ -24,18 +25,15 @@ export default function LoginForm() {
     const password = formData.get("password") as string;
 
     try {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_BASE_URL + "/auth/login",
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
+        { email, password },
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
+          withCredentials: true, // include cookies if needed
         }
       );
 
-      const responseData = await response.json();
+      const responseData = response.data;
 
       if (responseData?.acknowledgement === false) {
         setError(responseData.message);
@@ -48,9 +46,13 @@ export default function LoginForm() {
       setRefreshAndAccessToken(accessToken, refreshToken);
 
       router.push("/");
-    } catch {
-      setError("Something went wrong. Please try again.");
-      toast.error("Something went wrong.");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message ||
+        "Something went wrong. Please try again.";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
