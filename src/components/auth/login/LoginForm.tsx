@@ -112,7 +112,7 @@ export default function LoginForm() {
         size="md"
         className="bg-red-500 text-white"
       >
-        Login As Guest
+        Try Without Login
       </Button>
 
       <SubmitBtn text="Sign In" loadingText="Signing In" loading={loading} />
