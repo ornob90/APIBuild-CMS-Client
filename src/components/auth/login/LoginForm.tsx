@@ -25,7 +25,7 @@ export default function LoginForm() {
 
     try {
       const response = await fetch(
-        process.env.NEXT_PUBLIC_SERVER_BASE_URL + "/auth/login",
+        process.env.NEXT_PUBLIC_BASE_URL + "/auth/login",
         {
           method: "POST",
           headers: {
@@ -48,9 +48,9 @@ export default function LoginForm() {
       setRefreshAndAccessToken(accessToken, refreshToken);
 
       router.push("/");
-    } catch {
+    } catch (err) {
       setError("Something went wrong. Please try again.");
-      toast.error("Something went wrong.");
+      toast.error("Something went wrong.", err.message);
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ export default function LoginForm() {
         name="email"
         variant="underlined"
         required
-        isInvalid={!!error}
+        // isInvalid={!!error}
       />
 
       <Input
@@ -73,7 +73,7 @@ export default function LoginForm() {
         name="password"
         variant="underlined"
         required
-        isInvalid={!!error}
+        // isInvalid={!!error}
       />
 
       {error && <p className="text-red-500 text-center">{error}</p>}
