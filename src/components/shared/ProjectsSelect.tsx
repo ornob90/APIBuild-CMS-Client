@@ -10,6 +10,8 @@ interface ProjectsSelectProps extends Omit<SelectProps, "options"> {
 const ProjectsSelect = (props: ProjectsSelectProps) => {
   const { projects } = useAppSelector((state) => state.project);
 
+  console.log("projects", projects)
+
   const projectsOptions = projects.map((project) => ({
     label: project.projectName,
     value: project?._id || "",

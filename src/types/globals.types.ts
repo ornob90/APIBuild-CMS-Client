@@ -11,11 +11,11 @@ export interface ServerActionState {
 }
 
 export interface PageParams {
-  params: { [key: string]: string };
+  params?: { [key: string]: string };
 }
 
 export interface PageSearchParams {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export interface PageProps {

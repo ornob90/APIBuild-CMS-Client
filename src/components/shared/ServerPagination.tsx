@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
-import { Pagination, PaginationProps } from "@heroui/pagination";
+import { Pagination } from "@heroui/pagination";
 import { usePathname, useRouter } from "next/navigation";
 
-const ServerPagination = (props?: PaginationProps) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ServerPagination = (props?: any) => {
 
   const router = useRouter();
   const pathname = usePathname();

@@ -1,17 +1,32 @@
-"use server"
+"use server";
 
-export const getUserToken = async() => {
-    try {
-        // const response = await 
-    } catch {
-        return []
-    }
-}
+import { validateSession } from "@/libs/auth.libs";
+import { Token } from "@/types/tokens.types";
 
-export const generateToken = async () => {
-    try {
-        
-    } catch {
-        return ""
+export const getUserToken = async (): Promise<Token[]> => {
+  try {
+    const token = await validateSession();
+
+    const response = await fetch(process.env.SERVER_BASE_URL! + `/tokens`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      next: {
+        tags: [`tokens_by_user_page`],
+      },
+    });
+
+    const responseData = await response.json();
+
+    console.log(responseData)
+
+    if (responseData?.acknowledgement) {
+      return responseData?.data;
     }
-}
+
+    return [];
+  } catch {
+    return [];
+  }
+};

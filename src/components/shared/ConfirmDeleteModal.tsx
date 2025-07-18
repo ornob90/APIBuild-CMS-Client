@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { Modal, ModalContent, useDisclosure } from "@heroui/modal";
 import { PiWarningCircle } from "react-icons/pi";
 import { Button } from "@heroui/button";
@@ -10,6 +11,7 @@ export interface ConfirmDeleteModelProps {
   isConfirmLoad: boolean;
   btnTemplate: ReactNode;
   onConfirmation: (action: ConfirmModalBtnEnum) => void;
+  closeModal?: boolean;
 }
 
 const ConfirmDeleteModel = ({
@@ -17,12 +19,24 @@ const ConfirmDeleteModel = ({
   isConfirmLoad,
   btnTemplate,
   onConfirmation,
+  closeModal,
 }: ConfirmDeleteModelProps) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpenChange } = useDisclosure();
+
+  useEffect(() => {
+    if (closeModal && isOpen) onOpenChange();
+  }, [closeModal]);
 
   return (
     <>
-      <div onClick={onOpen}>{btnTemplate}</div>
+      <div
+        onClick={() => {
+          console.log("CLICKED");
+          onOpenChange();
+        }}
+      >
+        {btnTemplate}
+      </div>
       <Modal
         hideCloseButton
         isOpen={isOpen}
@@ -39,7 +53,9 @@ const ConfirmDeleteModel = ({
               <div className="flex w-full justify-center gap-x-2">
                 <Button
                   disabled={isConfirmLoad}
-                  onPress={() => onConfirmation(ConfirmModalBtnEnum.CONFIRM)}
+                  onPress={async () => {
+                    onConfirmation(ConfirmModalBtnEnum.CONFIRM);
+                  }}
                   className=" rounded-lg bg-white text-darkGray  font-medium"
                   isLoading={isConfirmLoad}
                 >
@@ -49,7 +65,7 @@ const ConfirmDeleteModel = ({
                   disabled={isConfirmLoad}
                   onPress={() => {
                     onConfirmation(ConfirmModalBtnEnum.CANCEL);
-                    onOpenChange()
+                    onOpenChange();
                   }}
                   className=" rounded-lg  bg-red-500 text-white"
                 >

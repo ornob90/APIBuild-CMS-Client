@@ -1,7 +1,6 @@
 "use client";
 import SubmitBtn from "@/components/shared/SubmitBtn";
 import { initialFormActionState } from "@/data/actions.data";
-import { ApiStatus } from "@/types/globals.types";
 import { login } from "@/utils/auth.utils";
 import { Input } from "@heroui/input";
 import Link from "next/link";

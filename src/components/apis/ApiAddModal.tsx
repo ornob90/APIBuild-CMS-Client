@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /*  eslint-disable-next-line @typescript-eslint/no-explicit-any */
+/* @typescript-eslint/no-explicit-any */
 
 "use client";
 import React, { useEffect, useState } from "react";
@@ -112,8 +113,11 @@ const AddApiModal = ({}) => {
 
       setFormStatus(ApiStatus.ERROR);
       onOpenChange();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setFormStatus(ApiStatus.ERROR);
+      if (!error) return
+
       toast.error(
         typeof error?.message === "string"
           ? error?.response?.data?.message
