@@ -7,15 +7,27 @@ export interface SubmitBtnProps {
   text: string;
   loadingText: string;
   className?: string;
-  size?: "sm" | "md" | "lg" | undefined
+  size?: "sm" | "md" | "lg" | undefined;
+  loading?: boolean;
 }
 
-const SubmitBtn = ({ text, loadingText, className, size="md" }: SubmitBtnProps) => {
+const SubmitBtn = ({
+  text,
+  loadingText,
+  className,
+  loading,
+  size = "md",
+}: SubmitBtnProps) => {
   const { pending, data } = useFormStatus();
-  console.log("FORM DATA: ", data)
+  console.log("FORM DATA: ", data);
 
   return (
-    <Button  size={size} isLoading={pending} type="submit" className={`bg-white text-black ${className}`}>
+    <Button
+      size={size}
+      isLoading={pending || loading}
+      type="submit"
+      className={`bg-white text-black ${className}`}
+    >
       {pending ? loadingText : text}
     </Button>
   );

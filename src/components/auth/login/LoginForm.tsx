@@ -1,63 +1,85 @@
 "use client";
+
 import SubmitBtn from "@/components/shared/SubmitBtn";
-import { initialFormActionState } from "@/data/actions.data";
-import { login } from "@/utils/auth.utils";
+import { setRefreshAndAccessToken } from "@/libs/auth.libs";
 import { Input } from "@heroui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useFormState } from "react-dom";
+import { useState } from "react";
 import toast from "react-hot-toast";
+ // Assuming you have this
 
-// Define the props for the component to handle server-side errors
-interface LoginFormProps {
-  error?: string;
-}
-
-// Server Component
-export default function LoginForm({ error }: LoginFormProps = {}) {
-  const [state, formAction] = useFormState(login, initialFormActionState);
-
+export default function LoginForm() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (state && state?.message) {
-      toast.error(state.message);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_SERVER_BASE_URL + "/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+
+      const responseData = await response.json();
+
+      if (responseData?.acknowledgement === false) {
+        setError(responseData.message);
+        toast.error(responseData.message);
+        return;
+      }
+
+      const { accessToken, refreshToken } = responseData.data;
+
+      setRefreshAndAccessToken(accessToken, refreshToken);
+
+      router.push("/");
+    } catch {
+      setError("Something went wrong. Please try again.");
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
     }
-  }, [state, router]);
+  };
 
   return (
-    <form
-      action={formAction} // Bind the server action directly to the form
-      className="w-[80%] flex flex-col gap-y-4"
-    >
-      {/* Email Input */}
+    <form onSubmit={handleSubmit} className="w-[80%] flex flex-col gap-y-4">
       <Input
         type="email"
         label="Email"
-        name="email" // Required for FormData
+        name="email"
         variant="underlined"
         required
         isInvalid={!!error}
       />
 
-      {/* Password Input */}
       <Input
-        label="Password"
         type="password"
-        name="password" // Required for FormData
+        label="Password"
+        name="password"
         variant="underlined"
         required
         isInvalid={!!error}
       />
 
-      {/* Error Message */}
       {error && <p className="text-red-500 text-center">{error}</p>}
 
-      {/* Submit Button */}
-      <SubmitBtn text="Sign In" loadingText="Signing In" />
+      <SubmitBtn text="Sign In" loadingText="Signing In" loading={loading} />
 
-      {/* Register Link */}
       <p className="text-center">
         New Here?{" "}
         <Link
